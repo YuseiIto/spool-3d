@@ -91,14 +91,19 @@ Two of these boundaries carry real weight and are enforced by `no-restricted-imp
 
 ## Deployment
 
-Cloudflare Pages, built from `main` by Cloudflare's own Git integration — so no deployment
-credentials live in this repository or in GitHub Actions, which only ever runs the checks.
+Cloudflare Workers, serving static assets, built from `main` by Cloudflare's own Git integration
+— so no deployment credentials live in this repository or in GitHub Actions, which only ever runs
+the checks.
 
 | Setting | Value |
 | --- | --- |
 | Build command | `npm run build` |
-| Output directory | `dist` |
+| Deploy command | `npx wrangler deploy` (the default) |
 | Node version | from `.node-version` |
+
+`wrangler.jsonc` names the Worker and points it at `dist`, so both the deploy command and the
+`wrangler versions upload` that preview branches run find the assets without being told where
+they are.
 
 `public/_headers` carries the rest. The WASM module is single-threaded, so the site needs no
 cross-origin isolation; it does need `'unsafe-eval'` for the worker alone, because Emscripten's
