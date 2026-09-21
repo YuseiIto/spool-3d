@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+	<title>Spool 3D</title>
+
+	<!--
+		The spool in elevation, split down the middle and coloured as the preview colours a part
+		and its mate. The seam is drawn straight rather than waved: at the size a tab shows this,
+		a wave is noise.
+	-->
+	<defs>
+		<path id="spool" d="M6 3h4v8h12V3h4v26h-4v-8H10v8H6Z" />
+		<clipPath id="near"><rect x="0" y="0" width="16" height="32" /></clipPath>
+		<clipPath id="far"><rect x="16" y="0" width="16" height="32" /></clipPath>
+	</defs>
+
+	<use href="#spool" fill="#5fa8d3" clip-path="url(#near)" />
+	<use href="#spool" fill="#d39a5f" clip-path="url(#far)" />
+</svg>

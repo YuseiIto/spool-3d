@@ -8,6 +8,36 @@
 			name="description"
 			content="Design a wire spool to your own dimensions and download it as STL or 3MF, ready to 3D print."
 		/>
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+		<!--
+			The social card. Absolute URLs, because a crawler resolves these against nothing.
+
+			The image is the same for every link, including the ones carrying a spool's dimensions.
+			Rendering the shared spool instead would mean a Worker rewriting this document on every
+			request, and the site is otherwise wholly static — no request it serves invokes anything.
+			The card is built from scripts/og/card.html; see scripts/og/render.mjs.
+		-->
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Spool 3D" />
+		<meta property="og:url" content="https://spool-3d.yuseiito.com/" />
+		<meta property="og:title" content="Spool 3D — parametric wire spools" />
+		<meta
+			property="og:description"
+			content="Design a wire spool to your own dimensions and download it as STL or 3MF, ready to 3D print. Split it in two and one part, printed twice, mates with itself."
+		/>
+		<meta
+			property="og:image"
+			content="https://spool-3d.yuseiito.com/og.png"
+		/>
+		<meta property="og:image:type" content="image/png" />
+		<meta property="og:image:width" content="2400" />
+		<meta property="og:image:height" content="1260" />
+		<meta
+			property="og:image:alt"
+			content="A sectional drawing of a wire spool, its two halves coloured blue and orange where the wavy seam divides them, dimensioned 55 across and 25 between the flanges."
+		/>
+		<meta name="twitter:card" content="summary_large_image" />
 	</head>
 	<body>
 		<div id="root"></div>

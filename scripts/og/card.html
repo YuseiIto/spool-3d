@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>spool-3d social card</title>
+
+		<!--
+			The source of public/og.png. Rendered by scripts/og/render.mjs, which screenshots this
+			file at exactly 1200x630.
+
+			Kept as a page rather than drawn straight into an SVG so it can use the same faces and
+			the same palette as the site, and so that regenerating it is a screenshot of something
+			a person can open and look at.
+
+			The drawing is a front elevation with the axis horizontal, which is how a spool is
+			usually put on paper: the flanges stand at the ends and the core spans between them.
+			The two colours are the ones the preview uses for a part and its mate, so the picture
+			says the thing that distinguishes this tool — one part, printed twice — without a
+			caption for it.
+		-->
+		<style>
+			@font-face {
+				font-family: "IBM Plex Mono";
+				font-weight: 400;
+				src: url("../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2")
+					format("woff2");
+			}
+			@font-face {
+				font-family: "IBM Plex Mono";
+				font-weight: 500;
+				src: url("../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2")
+					format("woff2");
+			}
+			@font-face {
+				font-family: "IBM Plex Sans";
+				font-weight: 400;
+				src: url("../../node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2")
+					format("woff2");
+			}
+
+			:root {
+				--void: #0a0c0f;
+				--chassis: #12151a;
+				--rule: #242a33;
+				--rule-bright: #333b46;
+				--ink: #e9edf2;
+				--ink-dim: #8b94a1;
+				--ink-faint: #5a6270;
+				--part: #5fa8d3;
+				--mate: #d39a5f;
+			}
+
+			* {
+				margin: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				width: 1200px;
+				height: 630px;
+				overflow: hidden;
+				position: relative;
+				background: var(--void);
+				color: var(--ink);
+				font-family: "IBM Plex Mono", monospace;
+			}
+
+			/* The stage's own backdrop: a measuring grid, and a pool of light under the model. */
+			.grid {
+				position: absolute;
+				inset: 0;
+				background-image:
+					linear-gradient(var(--rule) 1px, transparent 1px),
+					linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+				background-size: 40px 40px;
+				opacity: 0.32;
+				mask-image: radial-gradient(
+					120% 90% at 64% 50%,
+					#000 25%,
+					transparent 78%
+				);
+			}
+
+			.pool {
+				position: absolute;
+				inset: 0;
+				background: radial-gradient(
+					46% 62% at 64% 50%,
+					#1d2530 0%,
+					transparent 70%
+				);
+			}
+
+			.sheet {
+				position: relative;
+				height: 100%;
+				display: grid;
+				grid-template-columns: 500px 1fr;
+				align-items: center;
+				justify-items: center;
+				padding: 64px 72px;
+			}
+
+			.sheet > :first-child {
+				justify-self: start;
+			}
+
+			h1 {
+				font-size: 62px;
+				font-weight: 500;
+				letter-spacing: 0.01em;
+				line-height: 1;
+			}
+
+			.rule {
+				width: 92px;
+				height: 1px;
+				margin: 26px 0 24px;
+				background: var(--rule-bright);
+			}
+
+			.says {
+				font-family: "IBM Plex Sans", sans-serif;
+				font-size: 25px;
+				line-height: 1.5;
+				color: var(--ink-dim);
+				max-width: 21ch;
+			}
+
+			.specs {
+				position: absolute;
+				left: 72px;
+				bottom: 56px;
+				display: flex;
+				gap: 30px;
+				font-size: 17px;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				color: var(--ink-faint);
+			}
+
+			.specs b {
+				font-weight: 500;
+				color: var(--ink-dim);
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="grid"></div>
+		<div class="pool"></div>
+
+		<div class="sheet">
+			<div>
+				<h1>Spool 3D</h1>
+				<div class="rule"></div>
+				<p class="says">Wire spools built to your own dimensions.</p>
+			</div>
+
+			<!--
+				Drawn in millimetres and scaled once, so the numbers in the markup are the numbers
+				on the dimension lines: the stock spool, 55 across and 25 between the flanges.
+			-->
+			<svg width="424" height="484" viewBox="-23 -30 56 64" fill="none">
+				<defs>
+					<!--
+						The seam. A sine across the core stands in for the parting surface, whose
+						height really does run as sin(n*theta) around the axis — and which is what
+						lets one printed part mate with a second copy of itself. It spans the core
+						and no further, because the core is the only material the parting plane
+						passes through: between the flanges there is nothing to cut.
+
+						The same curve appears three times — once to draw, twice to divide the
+						halves — because a clipPath needs a closed region and cannot borrow part
+						of an open path.
+					-->
+					<path id="seam" d="M0 -12.5
+					   C 2.4 -10.4, 2.4 -8.3, 0 -6.25
+					   C -2.4 -4.2, -2.4 -2.1, 0 0
+					   C 2.4 2.1, 2.4 4.2, 0 6.25
+					   C -2.4 8.3, -2.4 10.4, 0 12.5" />
+
+					<clipPath id="nearer">
+						<path d="M-23 -30 H0 V-12.5
+					   C 2.4 -10.4, 2.4 -8.3, 0 -6.25
+					   C -2.4 -4.2, -2.4 -2.1, 0 0
+					   C 2.4 2.1, 2.4 4.2, 0 6.25
+					   C -2.4 8.3, -2.4 10.4, 0 12.5 V34 H-23 Z" />
+					</clipPath>
+					<clipPath id="further">
+						<path d="M33 -30 H0 V-12.5
+					   C 2.4 -10.4, 2.4 -8.3, 0 -6.25
+					   C -2.4 -4.2, -2.4 -2.1, 0 0
+					   C 2.4 2.1, 2.4 4.2, 0 6.25
+					   C -2.4 8.3, -2.4 10.4, 0 12.5 V34 H33 Z" />
+					</clipPath>
+
+					<!-- The silhouette: two flanges at the ends, the core spanning between them. -->
+					<path
+						id="body"
+						d="M-15 -27.5 H-12.5 V-12.5 H12.5 V-27.5 H15 V27.5 H12.5 V12.5 H-12.5 V27.5 H-15 Z"
+					/>
+				</defs>
+
+				<g clip-path="url(#nearer)">
+					<use href="#body" fill="#5fa8d3" fill-opacity="0.92" />
+				</g>
+				<g clip-path="url(#further)">
+					<use href="#body" fill="#d39a5f" fill-opacity="0.92" />
+				</g>
+
+				<!-- The bore, hidden behind the material, so it is dashed as a hidden edge is. -->
+				<g stroke="#0a0c0f" stroke-width="0.3" stroke-dasharray="1.5 1.1">
+					<path d="M-15 -10 H15" />
+					<path d="M-15 10 H15" />
+				</g>
+
+				<use href="#body" stroke="#0a0c0f" stroke-width="0.5" />
+				<use href="#seam" stroke="#0a0c0f" stroke-width="0.5" />
+
+				<!-- Axis. -->
+				<path
+					d="M-19 0 H19"
+					stroke="#5a6270"
+					stroke-width="0.22"
+					stroke-dasharray="3 1.2 0.6 1.2"
+				/>
+
+				<!-- Flange diameter, set off to the right. -->
+				<g stroke="#5a6270" stroke-width="0.22">
+					<path d="M15.4 -27.5 H20.4" />
+					<path d="M15.4 27.5 H20.4" />
+					<path d="M19 -27.5 V27.5" />
+					<path d="M18.2 -26.2 L19 -27.5 L19.8 -26.2" />
+					<path d="M18.2 26.2 L19 27.5 L19.8 26.2" />
+				</g>
+				<text
+					x="21.4"
+					y="0"
+					fill="#8b94a1"
+					font-family="IBM Plex Mono"
+					font-size="3.6"
+					dominant-baseline="central"
+				>
+					Ø55
+				</text>
+
+				<!-- Winding width, under the core. -->
+				<g stroke="#5a6270" stroke-width="0.22">
+					<path d="M-12.5 28.2 V32" />
+					<path d="M12.5 28.2 V32" />
+					<path d="M-12.5 30.6 H12.5" />
+					<path d="M-11.2 29.8 L-12.5 30.6 L-11.2 31.4" />
+					<path d="M11.2 29.8 L12.5 30.6 L11.2 31.4" />
+				</g>
+				<text
+					x="0"
+					y="30.6"
+					fill="#8b94a1"
+					font-family="IBM Plex Mono"
+					font-size="3.6"
+					text-anchor="middle"
+					dominant-baseline="central"
+					style="paint-order: stroke; stroke: #0a0c0f; stroke-width: 1.8"
+				>
+					25
+				</text>
+			</svg>
+		</div>
+
+		<div class="specs">
+			<span><b>STL</b> / <b>3MF</b></span>
+			<span>One part, printed twice</span>
+			<span>No upload</span>
+		</div>
+	</body>
+</html>
