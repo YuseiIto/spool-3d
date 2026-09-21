@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>spool-3d social card</title>
+
+		<!--
+			The source of public/og.png. Rendered by scripts/og/render.mjs, which screenshots this
+			file at exactly 1200x630.
+
+			Kept as a page rather than drawn straight into an SVG so it can use the same faces and
+			the same palette as the site, and so that regenerating it is a screenshot of something
+			a person can open and look at.
+
+			The spool is the tool's own render, captured by scripts/og/capture.mjs rather than
+			drawn here, so the card shows what the generator makes instead of someone's picture of
+			it. Its two colours are the ones the preview gives a part and its mate, which is what
+			puts the seam on the card without a caption explaining it.
+		-->
+		<style>
+			@font-face {
+				font-family: "IBM Plex Mono";
+				font-weight: 400;
+				src: url("../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2")
+					format("woff2");
+			}
+			@font-face {
+				font-family: "IBM Plex Mono";
+				font-weight: 500;
+				src: url("../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2")
+					format("woff2");
+			}
+			@font-face {
+				font-family: "IBM Plex Sans";
+				font-weight: 400;
+				src: url("../../node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2")
+					format("woff2");
+			}
+
+			:root {
+				--void: #0a0c0f;
+				--chassis: #12151a;
+				--rule: #242a33;
+				--rule-bright: #333b46;
+				--ink: #e9edf2;
+				--ink-dim: #8b94a1;
+				--ink-faint: #5a6270;
+				--part: #5fa8d3;
+				--mate: #d39a5f;
+			}
+
+			* {
+				margin: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				width: 1200px;
+				height: 630px;
+				overflow: hidden;
+				position: relative;
+				background: var(--void);
+				color: var(--ink);
+				font-family: "IBM Plex Mono", monospace;
+			}
+
+			/* The stage's own backdrop: a measuring grid, and a pool of light under the model. */
+			.grid {
+				position: absolute;
+				inset: 0;
+				background-image:
+					linear-gradient(var(--rule) 1px, transparent 1px),
+					linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+				background-size: 40px 40px;
+				opacity: 0.32;
+				mask-image: radial-gradient(
+					120% 90% at 64% 50%,
+					#000 25%,
+					transparent 78%
+				);
+			}
+
+			.pool {
+				position: absolute;
+				inset: 0;
+				background: radial-gradient(
+					46% 62% at 64% 50%,
+					#1d2530 0%,
+					transparent 70%
+				);
+			}
+
+			.sheet {
+				position: relative;
+				height: 100%;
+				display: grid;
+				grid-template-columns: 500px 1fr;
+				align-items: center;
+				justify-items: center;
+				padding: 64px 72px;
+			}
+
+			.sheet > :first-child {
+				justify-self: start;
+			}
+
+			h1 {
+				font-size: 62px;
+				font-weight: 500;
+				letter-spacing: 0.01em;
+				line-height: 1;
+			}
+
+			.rule {
+				width: 92px;
+				height: 1px;
+				margin: 26px 0 24px;
+				background: var(--rule-bright);
+			}
+
+			.spool {
+				display: block;
+				width: 500px;
+				height: 500px;
+				/* The model is lit from above on the site; a soft shadow gives it ground here. */
+				filter: drop-shadow(0 26px 34px rgb(0 0 0 / 0.55));
+			}
+
+			.says {
+				font-family: "IBM Plex Sans", sans-serif;
+				font-size: 25px;
+				line-height: 1.5;
+				color: var(--ink-dim);
+				white-space: nowrap;
+			}
+
+		</style>
+	</head>
+
+	<body>
+		<div class="grid"></div>
+		<div class="pool"></div>
+
+		<div class="sheet">
+			<div>
+				<h1>Spool 3D</h1>
+				<div class="rule"></div>
+				<p class="says">Parametric wire spool generator</p>
+			</div>
+
+			<!--
+				The spool itself, rendered by the tool's own preview and captured by
+				scripts/og/capture.mjs — not an illustration of it, so the card cannot drift away
+				from what the generator actually makes. Split, so the wave seam shows where one
+				part ends and the same part turned over begins.
+			-->
+			<img class="spool" src="spool.png" alt="" />
+		</div>
+
+	</body>
+</html>
