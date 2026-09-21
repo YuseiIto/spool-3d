@@ -12,11 +12,10 @@
 			the same palette as the site, and so that regenerating it is a screenshot of something
 			a person can open and look at.
 
-			The drawing is a front elevation with the axis horizontal, which is how a spool is
-			usually put on paper: the flanges stand at the ends and the core spans between them.
-			The two colours are the ones the preview uses for a part and its mate, so the picture
-			says the thing that distinguishes this tool — one part, printed twice — without a
-			caption for it.
+			The spool is the tool's own render, captured by scripts/og/capture.mjs rather than
+			drawn here, so the card shows what the generator makes instead of someone's picture of
+			it. Its two colours are the ones the preview gives a part and its mate, which is what
+			puts the seam on the card without a caption explaining it.
 		-->
 		<style>
 			@font-face {
@@ -119,6 +118,14 @@
 				background: var(--rule-bright);
 			}
 
+			.spool {
+				display: block;
+				width: 500px;
+				height: 500px;
+				/* The model is lit from above on the site; a soft shadow gives it ground here. */
+				filter: drop-shadow(0 26px 34px rgb(0 0 0 / 0.55));
+			}
+
 			.says {
 				font-family: "IBM Plex Sans", sans-serif;
 				font-size: 25px;
@@ -127,20 +134,6 @@
 				white-space: nowrap;
 			}
 
-			.specs {
-				position: absolute;
-				left: 72px;
-				bottom: 56px;
-				font-size: 17px;
-				letter-spacing: 0.14em;
-				text-transform: uppercase;
-				color: var(--ink-faint);
-			}
-
-			.specs b {
-				font-weight: 500;
-				color: var(--ink-dim);
-			}
 		</style>
 	</head>
 
@@ -156,77 +149,13 @@
 			</div>
 
 			<!--
-				Drawn in millimetres and scaled once, so the numbers in the markup are the numbers
-				on the dimension lines: the stock spool, 55 across and 25 between the flanges.
+				The spool itself, rendered by the tool's own preview and captured by
+				scripts/og/capture.mjs — not an illustration of it, so the card cannot drift away
+				from what the generator actually makes. Split, so the wave seam shows where one
+				part ends and the same part turned over begins.
 			-->
-			<svg width="350" height="500" viewBox="-21 -30 42 60" fill="none">
-				<defs>
-					<!--
-						The seam. A sine across the core stands in for the parting surface, whose
-						height really does run as sin(n*theta) around the axis — and which is what
-						lets one printed part mate with a second copy of itself. It spans the core
-						and no further, because the core is the only material the parting plane
-						passes through: between the flanges there is nothing to cut.
-
-						The same curve appears three times — once to draw, twice to divide the
-						halves — because a clipPath needs a closed region and cannot borrow part
-						of an open path.
-					-->
-					<path id="seam" d="M0 -12.5
-					   C 2.4 -10.4, 2.4 -8.3, 0 -6.25
-					   C -2.4 -4.2, -2.4 -2.1, 0 0
-					   C 2.4 2.1, 2.4 4.2, 0 6.25
-					   C -2.4 8.3, -2.4 10.4, 0 12.5" />
-
-					<clipPath id="nearer">
-						<path d="M-21 -30 H0 V-12.5
-					   C 2.4 -10.4, 2.4 -8.3, 0 -6.25
-					   C -2.4 -4.2, -2.4 -2.1, 0 0
-					   C 2.4 2.1, 2.4 4.2, 0 6.25
-					   C -2.4 8.3, -2.4 10.4, 0 12.5 V30 H-21 Z" />
-					</clipPath>
-					<clipPath id="further">
-						<path d="M21 -30 H0 V-12.5
-					   C 2.4 -10.4, 2.4 -8.3, 0 -6.25
-					   C -2.4 -4.2, -2.4 -2.1, 0 0
-					   C 2.4 2.1, 2.4 4.2, 0 6.25
-					   C -2.4 8.3, -2.4 10.4, 0 12.5 V30 H21 Z" />
-					</clipPath>
-
-					<!-- The silhouette: two flanges at the ends, the core spanning between them. -->
-					<path
-						id="body"
-						d="M-15 -27.5 H-12.5 V-12.5 H12.5 V-27.5 H15 V27.5 H12.5 V12.5 H-12.5 V27.5 H-15 Z"
-					/>
-				</defs>
-
-				<g clip-path="url(#nearer)">
-					<use href="#body" fill="#5fa8d3" fill-opacity="0.92" />
-				</g>
-				<g clip-path="url(#further)">
-					<use href="#body" fill="#d39a5f" fill-opacity="0.92" />
-				</g>
-
-				<!-- The bore, hidden behind the material, so it is dashed as a hidden edge is. -->
-				<g stroke="#0a0c0f" stroke-width="0.3" stroke-dasharray="1.5 1.1">
-					<path d="M-15 -10 H15" />
-					<path d="M-15 10 H15" />
-				</g>
-
-				<use href="#body" stroke="#0a0c0f" stroke-width="0.5" />
-				<use href="#seam" stroke="#0a0c0f" stroke-width="0.5" />
-
-				<!-- Axis. -->
-				<path
-					d="M-17.5 0 H17.5"
-					stroke="#5a6270"
-					stroke-width="0.22"
-					stroke-dasharray="3 1.2 0.6 1.2"
-				/>
-
-			</svg>
+			<img class="spool" src="spool.png" alt="" />
 		</div>
 
-		<div class="specs"><b>STL</b> / <b>3MF</b></div>
 	</body>
 </html>

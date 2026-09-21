@@ -6,6 +6,9 @@
  *
  *   node scripts/og/render.mjs
  *
+ * The spool on the card comes from scripts/og/capture.mjs, which photographs the tool's own
+ * preview. Rerun that first if the model or its colours change.
+ *
  * Playwright is not a dependency of this project — it is only needed to turn the card into a
  * picture, and adding a browser download to every `npm install` to regenerate one image a year is
  * a poor trade. If it is not installed, open card.html in a browser and screenshot it instead;
