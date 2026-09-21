@@ -131,8 +131,6 @@
 				position: absolute;
 				left: 72px;
 				bottom: 56px;
-				display: flex;
-				gap: 30px;
 				font-size: 17px;
 				letter-spacing: 0.14em;
 				text-transform: uppercase;
@@ -161,7 +159,7 @@
 				Drawn in millimetres and scaled once, so the numbers in the markup are the numbers
 				on the dimension lines: the stock spool, 55 across and 25 between the flanges.
 			-->
-			<svg width="424" height="484" viewBox="-23 -30 56 64" fill="none">
+			<svg width="350" height="500" viewBox="-21 -30 42 60" fill="none">
 				<defs>
 					<!--
 						The seam. A sine across the core stands in for the parting surface, whose
@@ -181,18 +179,18 @@
 					   C -2.4 8.3, -2.4 10.4, 0 12.5" />
 
 					<clipPath id="nearer">
-						<path d="M-23 -30 H0 V-12.5
+						<path d="M-21 -30 H0 V-12.5
 					   C 2.4 -10.4, 2.4 -8.3, 0 -6.25
 					   C -2.4 -4.2, -2.4 -2.1, 0 0
 					   C 2.4 2.1, 2.4 4.2, 0 6.25
-					   C -2.4 8.3, -2.4 10.4, 0 12.5 V34 H-23 Z" />
+					   C -2.4 8.3, -2.4 10.4, 0 12.5 V30 H-21 Z" />
 					</clipPath>
 					<clipPath id="further">
-						<path d="M33 -30 H0 V-12.5
+						<path d="M21 -30 H0 V-12.5
 					   C 2.4 -10.4, 2.4 -8.3, 0 -6.25
 					   C -2.4 -4.2, -2.4 -2.1, 0 0
 					   C 2.4 2.1, 2.4 4.2, 0 6.25
-					   C -2.4 8.3, -2.4 10.4, 0 12.5 V34 H33 Z" />
+					   C -2.4 8.3, -2.4 10.4, 0 12.5 V30 H21 Z" />
 					</clipPath>
 
 					<!-- The silhouette: two flanges at the ends, the core spanning between them. -->
@@ -220,57 +218,15 @@
 
 				<!-- Axis. -->
 				<path
-					d="M-19 0 H19"
+					d="M-17.5 0 H17.5"
 					stroke="#5a6270"
 					stroke-width="0.22"
 					stroke-dasharray="3 1.2 0.6 1.2"
 				/>
 
-				<!-- Flange diameter, set off to the right. -->
-				<g stroke="#5a6270" stroke-width="0.22">
-					<path d="M15.4 -27.5 H20.4" />
-					<path d="M15.4 27.5 H20.4" />
-					<path d="M19 -27.5 V27.5" />
-					<path d="M18.2 -26.2 L19 -27.5 L19.8 -26.2" />
-					<path d="M18.2 26.2 L19 27.5 L19.8 26.2" />
-				</g>
-				<text
-					x="21.4"
-					y="0"
-					fill="#8b94a1"
-					font-family="IBM Plex Mono"
-					font-size="3.6"
-					dominant-baseline="central"
-				>
-					Ø55
-				</text>
-
-				<!-- Winding width, under the core. -->
-				<g stroke="#5a6270" stroke-width="0.22">
-					<path d="M-12.5 28.2 V32" />
-					<path d="M12.5 28.2 V32" />
-					<path d="M-12.5 30.6 H12.5" />
-					<path d="M-11.2 29.8 L-12.5 30.6 L-11.2 31.4" />
-					<path d="M11.2 29.8 L12.5 30.6 L11.2 31.4" />
-				</g>
-				<text
-					x="0"
-					y="30.6"
-					fill="#8b94a1"
-					font-family="IBM Plex Mono"
-					font-size="3.6"
-					text-anchor="middle"
-					dominant-baseline="central"
-					style="paint-order: stroke; stroke: #0a0c0f; stroke-width: 1.8"
-				>
-					25
-				</text>
 			</svg>
 		</div>
 
-		<div class="specs">
-			<span><b>STL</b> / <b>3MF</b></span>
-			<span>No upload</span>
-		</div>
+		<div class="specs"><b>STL</b> / <b>3MF</b></div>
 	</body>
 </html>
