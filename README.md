@@ -98,8 +98,12 @@ the checks.
 | Setting | Value |
 | --- | --- |
 | Build command | `npm run build` |
-| Deploy command | `npx wrangler deploy --assets ./dist` |
+| Deploy command | `npx wrangler deploy` (the default) |
 | Node version | from `.node-version` |
+
+`wrangler.jsonc` names the Worker and points it at `dist`, so both the deploy command and the
+`wrangler versions upload` that preview branches run find the assets without being told where
+they are.
 
 `public/_headers` carries the rest. The WASM module is single-threaded, so the site needs no
 cross-origin isolation; it does need `'unsafe-eval'` for the worker alone, because Emscripten's

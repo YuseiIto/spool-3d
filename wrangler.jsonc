@@ -1,0 +1,20 @@
+{
+	// Must match the Worker's name in the Cloudflare dashboard, or a build fails rather than
+	// creating a second Worker.
+	"name": "spool-3d",
+
+	// Required, though nothing here reads it: there is no Worker script, so no runtime behaviour
+	// for a compatibility date to pin.
+	"compatibility_date": "2026-09-21",
+
+	// No `main`. The site is static — the CAD kernel runs in the visitor's browser — so every
+	// request is served straight from the assets and none of them invokes a Worker.
+	//
+	// Declared here rather than passed as `--assets` on the deploy command, because the deploy
+	// command is not the only one that needs it: preview branches upload with
+	// `wrangler versions upload`, which has its own flags and its own dashboard field, and a
+	// directory named in only one of the two leaves the other unable to find anything to deploy.
+	"assets": {
+		"directory": "./dist"
+	}
+}
