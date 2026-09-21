@@ -1,0 +1,1152 @@
+/*
+ * spool-3d reads as a measuring instrument rather than an app: the content is millimetres of a
+ * physical object, so the numbers are the subject and everything else is chassis. Hence the
+ * monospaced readings, the hairline rules, a chassis with no colour in it at all, and a single
+ * signal blue reserved for the one thing under the pointer. The only saturated colour in the
+ * product is the model itself.
+ */
+
+:root {
+	--void: #0a0c0f;
+	--chassis: #12151a;
+	--chassis-lift: #171b21;
+	--rule: #242a33;
+	--rule-bright: #333b46;
+
+	--ink: #e9edf2;
+	--ink-dim: #8b94a1;
+	--ink-faint: #5a6270;
+
+	--signal: #5ec1f5;
+	--warning: #e0b567;
+	--danger: #ef7d72;
+
+	--sans: "IBM Plex Sans", system-ui, sans-serif;
+	--mono: "IBM Plex Mono", ui-monospace, monospace;
+
+	color-scheme: dark;
+	font-family: var(--sans);
+	font-size: 15px;
+	line-height: 1.45;
+	color: var(--ink);
+	background: var(--void);
+
+	/* Spacing rhythm, so the panel's density is set in one place. */
+	--gap: 0.55rem;
+	--pad: 1.1rem;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	-webkit-font-smoothing: antialiased;
+}
+
+/*
+ * The app owns the whole viewport and never scrolls as a page; the parameter panel scrolls
+ * inside itself instead. `min-height: 0` on the tracks is what makes that hold: grid items
+ * default to `min-height: auto`, so a tall child would otherwise stretch the row past the
+ * viewport rather than scroll within it.
+ */
+.layout {
+	display: grid;
+	grid-template-columns: minmax(268px, 312px) 1fr;
+	grid-template-rows: minmax(0, 1fr);
+	height: 100dvh;
+	overflow: hidden;
+}
+
+@media (max-width: 760px) {
+	.layout {
+		grid-template-columns: 1fr;
+		grid-template-rows: minmax(240px, 42dvh) minmax(0, 1fr);
+	}
+}
+
+/* ---------------------------------------------------------------- panel -- */
+
+.panel {
+	min-height: 0;
+	overflow-y: auto;
+	padding: var(--pad) var(--pad) 1.2rem;
+	background: var(--chassis);
+	border-right: 1px solid var(--rule);
+	scrollbar-width: thin;
+	scrollbar-color: var(--rule-bright) transparent;
+}
+
+/*
+ * Just the name. The panel opens onto a spool with dimension sliders beside it, so a line
+ * explaining that this makes spools is telling the reader what they are already looking at —
+ * and an instrument does not introduce itself. Positioning belongs in the README.
+ */
+.masthead h1 {
+	margin: 0;
+	font-family: var(--mono);
+	font-size: 1rem;
+	font-weight: 500;
+	letter-spacing: 0.06em;
+	color: var(--ink);
+}
+
+.panel section {
+	margin-top: 0.85rem;
+	padding-top: 0.55rem;
+	border-top: 1px solid var(--rule);
+}
+
+/* Section headings are set like the ruled captions on a spec sheet. */
+.panel h2 {
+	margin: 0 0 0.55rem;
+	font-family: var(--mono);
+	font-size: 0.64rem;
+	font-weight: 500;
+	letter-spacing: 0.17em;
+	text-transform: uppercase;
+	color: var(--ink-faint);
+}
+
+/* -------------------------------------------------------------- folded -- */
+
+/*
+ * Built on <details> so the disclosure is the browser's: keyboard operation, the open state in
+ * find-in-page, and correct semantics all come for free, and there is no state to keep in sync.
+ */
+.advanced {
+	margin-top: 0.85rem;
+	padding-top: 0.55rem;
+	border-top: 1px solid var(--rule);
+}
+
+.advanced summary {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-family: var(--mono);
+	font-size: 0.64rem;
+	letter-spacing: 0.17em;
+	text-transform: uppercase;
+	color: var(--ink-faint);
+	cursor: pointer;
+	list-style: none;
+	transition: color 120ms ease;
+}
+
+.advanced summary::-webkit-details-marker {
+	display: none;
+}
+
+/* A chevron that turns, drawn rather than typed so it lines up with the caps. */
+.advanced summary::before {
+	content: "";
+	width: 7px;
+	height: 7px;
+	border-right: 1px solid currentcolor;
+	border-bottom: 1px solid currentcolor;
+	transform: rotate(-45deg) translate(-1px, -1px);
+	transition: transform 160ms ease;
+}
+
+.advanced[open] summary::before {
+	transform: rotate(45deg) translate(-1px, -1px);
+}
+
+.advanced summary:hover {
+	color: var(--ink-dim);
+}
+
+.advanced__group {
+	margin-top: 0.9rem;
+}
+
+.advanced__group h3 {
+	margin: 0 0 0.5rem;
+	font-size: 0.7rem;
+	font-weight: 400;
+	color: var(--ink-faint);
+}
+
+/* ----------------------------------------------------------- dimension -- */
+
+.field + .field,
+.field + .toggle,
+.toggle + .field,
+.select + .field,
+.field + .select {
+	margin-top: var(--gap);
+}
+
+.field__head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.field__head label {
+	font-size: 0.78rem;
+	color: var(--ink-dim);
+	cursor: pointer;
+}
+
+/* The reading: monospaced, right-aligned, and boxless so it reads as a value, not a blank. */
+.field__reading {
+	display: flex;
+	align-items: baseline;
+	gap: 0.25rem;
+	flex: none;
+}
+
+.field__reading input {
+	width: 4.1rem;
+	padding: 0;
+	font-family: var(--mono);
+	font-size: 0.93rem;
+	font-weight: 500;
+	font-variant-numeric: tabular-nums;
+	text-align: right;
+	color: var(--ink);
+	background: transparent;
+	border: 0;
+	border-bottom: 1px solid transparent;
+	transition:
+		border-color 120ms ease,
+		color 120ms ease;
+}
+
+.field__reading input:hover {
+	border-bottom-color: var(--rule-bright);
+}
+
+.field__reading input:focus {
+	outline: none;
+	color: var(--signal);
+	border-bottom-color: var(--signal);
+}
+
+/* The spinners fight the slider for the same job and are never the nicer way to do it. */
+.field__reading input::-webkit-outer-spin-button,
+.field__reading input::-webkit-inner-spin-button {
+	appearance: none;
+	margin: 0;
+}
+
+.field__reading input[type="number"] {
+	-moz-appearance: textfield;
+	appearance: textfield;
+}
+
+.field__unit {
+	min-width: 1.4rem;
+	font-family: var(--mono);
+	font-size: 0.64rem;
+	color: var(--ink-faint);
+}
+
+.field__hint {
+	margin: 0.1rem 0 0;
+	font-size: 0.66rem;
+	line-height: 1.3;
+	color: var(--ink-faint);
+}
+
+.field--invalid .field__reading input {
+	color: var(--danger);
+	border-bottom-color: var(--danger);
+}
+
+/* ---------------------------------------------------------------- track -- */
+
+/*
+ * A hairline that fills as far as the value has travelled. Painted with a gradient stop rather
+ * than a ::before overlay because that is the one approach all three native slider
+ * implementations render identically.
+ */
+.track {
+	display: block;
+	width: 100%;
+	height: 14px;
+	margin: 0.3rem 0 0;
+	appearance: none;
+	background: transparent;
+	cursor: ew-resize;
+}
+
+.track:focus {
+	outline: none;
+}
+
+.track::-webkit-slider-runnable-track {
+	height: 2px;
+	border-radius: 1px;
+	background: linear-gradient(
+		to right,
+		var(--signal) var(--travelled),
+		var(--rule) var(--travelled)
+	);
+	transition: height 110ms ease;
+}
+
+.track::-moz-range-track {
+	height: 2px;
+	border-radius: 1px;
+	background: linear-gradient(
+		to right,
+		var(--signal) var(--travelled),
+		var(--rule) var(--travelled)
+	);
+}
+
+.track::-webkit-slider-thumb {
+	appearance: none;
+	width: 9px;
+	height: 9px;
+	margin-top: -3.5px;
+	border-radius: 50%;
+	background: var(--ink);
+	border: 0;
+	box-shadow: 0 0 0 0 color-mix(in srgb, var(--signal) 45%, transparent);
+	transition:
+		box-shadow 130ms ease,
+		background-color 130ms ease,
+		transform 130ms ease;
+}
+
+.track::-moz-range-thumb {
+	width: 9px;
+	height: 9px;
+	border: 0;
+	border-radius: 50%;
+	background: var(--ink);
+	transition:
+		box-shadow 130ms ease,
+		transform 130ms ease;
+}
+
+.track:hover::-webkit-slider-thumb,
+.track:focus-visible::-webkit-slider-thumb {
+	background: var(--signal);
+	transform: scale(1.15);
+	box-shadow: 0 0 0 5px color-mix(in srgb, var(--signal) 18%, transparent);
+}
+
+.track:hover::-moz-range-thumb,
+.track:focus-visible::-moz-range-thumb {
+	background: var(--signal);
+	transform: scale(1.15);
+	box-shadow: 0 0 0 5px color-mix(in srgb, var(--signal) 18%, transparent);
+}
+
+.track:active::-webkit-slider-runnable-track {
+	height: 3px;
+}
+
+.field--invalid .track::-webkit-slider-runnable-track,
+.field--invalid .track::-moz-range-track {
+	background: linear-gradient(
+		to right,
+		var(--danger) var(--travelled),
+		var(--rule) var(--travelled)
+	);
+}
+
+/* ------------------------------------------------------------- choices -- */
+
+/*
+ * A fieldset so the group has a name the browser will read out with each option; the legend is
+ * set like the sub-headings inside the Advanced disclosure, so it reads as a caption rather than
+ * as the browser's default framed label.
+ */
+.choices {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.choices + .choices,
+.choices + .field,
+.choices + .select {
+	margin-top: 0.75rem;
+}
+
+.choices legend {
+	padding: 0;
+	margin-bottom: 0.3rem;
+	font-size: 0.7rem;
+	color: var(--ink-faint);
+}
+
+.choices__grid {
+	display: grid;
+	gap: 0.4rem;
+}
+
+.choices__grid--2 {
+	grid-template-columns: repeat(2, 1fr);
+}
+
+.choices__grid--3 {
+	grid-template-columns: repeat(3, 1fr);
+}
+
+.choices__grid--5 {
+	grid-template-columns: repeat(5, 1fr);
+	gap: 0.3rem;
+}
+
+.choices__grid--3 .mode,
+.choices__grid--5 .mode {
+	padding: 0.38rem 0.15rem 0.34rem;
+	font-size: 0.66rem;
+}
+
+.choices__grid--5 .mode {
+	gap: 0.15rem;
+	font-size: 0.62rem;
+}
+
+/*
+ * The radios stay in the accessibility tree and keep their keyboard behaviour — arrow keys move
+ * between them — they are just not what gets drawn.
+ */
+.mode {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.45rem 0.3rem 0.4rem;
+	font-size: 0.7rem;
+	color: var(--ink-dim);
+	background: var(--void);
+	border: 1px solid var(--rule);
+	border-radius: 4px;
+	cursor: pointer;
+	transition:
+		color 130ms ease,
+		border-color 130ms ease,
+		background-color 130ms ease;
+}
+
+.mode input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+}
+
+.mode svg {
+	color: var(--ink-faint);
+	transition: color 130ms ease;
+}
+
+.mode:hover {
+	color: var(--ink);
+	border-color: var(--rule-bright);
+}
+
+.mode:has(input:checked) {
+	color: var(--ink);
+	border-color: var(--signal);
+	background: color-mix(in srgb, var(--signal) 9%, var(--void));
+}
+
+.mode:has(input:checked) svg {
+	color: var(--signal);
+}
+
+.mode:has(input:focus-visible) {
+	outline: 1px solid var(--signal);
+	outline-offset: 2px;
+}
+
+/* ------------------------------------------------------ toggle / select -- */
+
+.toggle,
+.select {
+	display: flex;
+	align-items: center;
+	gap: 0.55rem;
+	font-size: 0.78rem;
+	color: var(--ink-dim);
+	cursor: pointer;
+}
+
+.select {
+	justify-content: space-between;
+}
+
+/*
+ * Dropped to the same hairline treatment as the readings. A bordered, filled select is the one
+ * piece of default browser chrome heavy enough to break the rhythm of a panel built from rules
+ * and numbers.
+ */
+.select select {
+	appearance: none;
+	padding: 0 0.95rem 0.05rem 0.3rem;
+	font-family: var(--mono);
+	font-size: 0.76rem;
+	text-align: right;
+	color: var(--ink);
+	background: transparent
+		url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' viewBox='0 0 9 6'%3E%3Cpath d='M1 1l3.5 3.5L8 1' fill='none' stroke='%238b94a1' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E")
+		no-repeat right 0.1rem center;
+	border: 0;
+	border-bottom: 1px solid transparent;
+	cursor: pointer;
+	transition:
+		border-color 120ms ease,
+		color 120ms ease;
+}
+
+.select select:hover {
+	border-bottom-color: var(--rule-bright);
+}
+
+.select select:focus {
+	outline: none;
+	color: var(--signal);
+	border-bottom-color: var(--signal);
+}
+
+/* An indicator lamp rather than a tick: it is the state of a feature, not a list item. */
+.toggle input {
+	appearance: none;
+	display: grid;
+	place-content: center;
+	flex: none;
+	width: 13px;
+	height: 13px;
+	margin: 0;
+	background: var(--void);
+	border: 1px solid var(--rule-bright);
+	border-radius: 2px;
+	cursor: pointer;
+	transition: border-color 130ms ease;
+}
+
+.toggle input::before {
+	content: "";
+	width: 5px;
+	height: 5px;
+	border-radius: 1px;
+	background: var(--signal);
+	transform: scale(0);
+	transition: transform 130ms cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.toggle input:hover {
+	border-color: var(--ink-dim);
+}
+
+.toggle input:checked {
+	border-color: var(--signal);
+}
+
+.toggle input:checked::before {
+	transform: scale(1);
+}
+
+.toggle input:focus-visible {
+	outline: 1px solid var(--signal);
+	outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------- hints -- */
+
+.hint {
+	margin: 0.45rem 0 0;
+	font-size: 0.66rem;
+	line-height: 1.35;
+	color: var(--ink-faint);
+}
+
+/* ------------------------------------------------------------- colophon -- */
+
+.colophon {
+	margin-top: 1.2rem;
+	padding-top: 0.6rem;
+	border-top: 1px solid var(--rule);
+	font-size: 0.64rem;
+	line-height: 1.5;
+	color: var(--ink-faint);
+}
+
+.colophon p {
+	margin: 0;
+}
+
+.colophon p + p {
+	margin-top: 0.2rem;
+	opacity: 0.75;
+}
+
+.colophon__line {
+	display: flex;
+	align-items: center;
+	gap: 0.45rem;
+}
+
+/*
+ * The mark is the label; the text beside it would only repeat what the icon already says.
+ *
+ * Selector carries the element too, because `.colophon a` is the more specific of the two and
+ * would otherwise keep drawing its underline beneath the icon.
+ */
+.colophon a.colophon__source {
+	display: flex;
+	flex: none;
+	color: var(--ink-faint);
+	border-bottom: 0;
+}
+
+.colophon a.colophon__source:hover {
+	color: var(--signal);
+}
+
+.colophon a {
+	color: var(--ink-dim);
+	text-decoration: none;
+	border-bottom: 1px solid var(--rule-bright);
+	transition:
+		color 120ms ease,
+		border-color 120ms ease;
+}
+
+.colophon a:hover {
+	color: var(--signal);
+	border-bottom-color: var(--signal);
+}
+
+/* --------------------------------------------------------------- issues -- */
+
+.issues {
+	margin: 1.2rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.issue {
+	display: flex;
+	gap: 0.5rem;
+	align-items: flex-start;
+	justify-content: space-between;
+	margin-top: 0.35rem;
+	padding: 0.45rem 0.55rem;
+	font-size: 0.7rem;
+	line-height: 1.35;
+	border-left: 2px solid;
+	border-radius: 0 3px 3px 0;
+}
+
+.issue-error {
+	color: var(--danger);
+	border-color: var(--danger);
+	background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+
+.issue-warning {
+	color: var(--warning);
+	border-color: var(--warning);
+	background: color-mix(in srgb, var(--warning) 9%, transparent);
+}
+
+.issue button {
+	flex: none;
+	padding: 0.05rem 0.4rem;
+	font-family: var(--mono);
+	font-size: 0.62rem;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	color: inherit;
+	background: transparent;
+	border: 1px solid currentcolor;
+	border-radius: 2px;
+	cursor: pointer;
+	opacity: 0.75;
+}
+
+.issue button:hover {
+	opacity: 1;
+}
+
+.error {
+	margin-top: 1rem;
+	padding: 0.55rem 0.7rem;
+	font-size: 0.74rem;
+	color: var(--danger);
+	background: color-mix(in srgb, var(--danger) 10%, transparent);
+	border-radius: 3px;
+}
+
+/* ---------------------------------------------------------------- stage -- */
+
+/*
+ * The viewport is lit from behind: a pool of light under the model and a faint measuring grid,
+ * so the part sits in a space rather than on a flat fill. The renderer draws with alpha so this
+ * shows through.
+ */
+.stage {
+	position: relative;
+	min-width: 0;
+	min-height: 0;
+	background: radial-gradient(
+		ellipse 70% 62% at 50% 46%,
+		#1b222c 0%,
+		#111620 45%,
+		var(--void) 100%
+	);
+}
+
+.stage::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background-image:
+		linear-gradient(to right, var(--rule) 1px, transparent 1px),
+		linear-gradient(to bottom, var(--rule) 1px, transparent 1px);
+	background-size: 56px 56px;
+	opacity: 0.32;
+	mask-image: radial-gradient(
+		ellipse 75% 70% at 50% 50%,
+		#000 15%,
+		transparent 80%
+	);
+	pointer-events: none;
+}
+
+.viewer {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+/*
+ * The renderer sizes the drawing buffer in device pixels and is told not to touch the element's
+ * style, so the CSS size has to be declared here. Without it the canvas lays out at its buffer
+ * size — twice the container on a high-DPI display — and pushes scrollbars onto the page.
+ */
+.viewer canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.placeholder {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-content: center;
+	margin: 0;
+	font-family: var(--mono);
+	font-size: 0.72rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--ink-faint);
+	pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ hud -- */
+
+.hud {
+	position: absolute;
+	z-index: 1;
+}
+
+/*
+ * Set into the top-right corner rather than floating in the viewport or spanning it. Flush with
+ * both edges and ruled only on the sides that meet the model, so it reads as part of the chassis
+ * — a full-width strip would read as application chrome instead, and a floating card would put a
+ * second set of corners inside a space that already has its own.
+ */
+.topbar {
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	right: 0;
+	display: flex;
+	align-items: center;
+	gap: 0.55rem;
+	padding: 0.6rem 0.95rem;
+	background: color-mix(in srgb, var(--chassis-lift) 92%, transparent);
+	backdrop-filter: blur(16px) saturate(1.3);
+	box-shadow: 0 10px 26px -18px #000;
+	border-bottom: 1px solid var(--rule);
+	border-left: 1px solid var(--rule);
+	border-bottom-left-radius: 5px;
+}
+
+.topbar__label {
+	margin-right: 0.2rem;
+	font-family: var(--mono);
+	font-size: 0.64rem;
+	letter-spacing: 0.17em;
+	text-transform: uppercase;
+	color: var(--ink-faint);
+}
+
+.topbar button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.45rem 0.95rem;
+	font-family: var(--mono);
+	font-size: 0.82rem;
+	font-weight: 500;
+	letter-spacing: 0.07em;
+	color: var(--ink-dim);
+	background: transparent;
+	border: 1px solid var(--rule);
+	border-radius: 3px;
+	cursor: pointer;
+	transition:
+		border-color 120ms ease,
+		color 120ms ease,
+		background-color 120ms ease;
+}
+
+.topbar button:hover:not(:disabled) {
+	color: var(--signal);
+	border-color: var(--signal);
+	background: color-mix(in srgb, var(--signal) 8%, var(--void));
+}
+
+.topbar button:disabled {
+	color: var(--ink-faint);
+	border-color: var(--rule);
+	cursor: not-allowed;
+}
+
+.topbar__icon {
+	width: 1.05em;
+	height: 1.05em;
+	color: var(--ink-faint);
+	transition: color 120ms ease;
+}
+
+.topbar button:hover:not(:disabled) .topbar__icon {
+	color: var(--signal);
+}
+
+.topbar button:disabled .topbar__icon {
+	color: var(--rule-bright);
+}
+
+.topbar__note {
+	font-family: var(--mono);
+	font-size: 0.62rem;
+	letter-spacing: 0.04em;
+	white-space: nowrap;
+	color: var(--warning);
+}
+
+.share {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.32rem;
+	padding: 0.26rem 0.6rem;
+	font-family: var(--sans);
+	font-size: 0.68rem;
+	white-space: nowrap;
+	color: var(--ink-dim);
+	background: transparent;
+	border: 1px solid var(--rule);
+	border-radius: 3px;
+	cursor: pointer;
+	transition:
+		color 120ms ease,
+		border-color 120ms ease;
+}
+
+.share__icon {
+	display: flex;
+	color: var(--ink-faint);
+	transition: color 120ms ease;
+}
+
+.share:hover {
+	color: var(--ink);
+	border-color: var(--rule-bright);
+}
+
+.share:hover .share__icon {
+	color: var(--signal);
+}
+
+.share--done,
+.share--done:hover {
+	color: var(--signal);
+	border-color: color-mix(in srgb, var(--signal) 45%, transparent);
+}
+
+.share--done .share__icon {
+	color: var(--signal);
+}
+
+/* Stacked above the readout, since both belong to the same bottom-right corner. */
+.hud--view {
+	right: 1rem;
+	bottom: 6.6rem;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.cube {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.15rem;
+}
+
+.cube__svg {
+	overflow: visible;
+}
+
+/* Faces are hit targets as well as picture; the hover tells you which one you are about to take. */
+.cube__face {
+	fill: color-mix(in srgb, var(--ink) 7%, transparent);
+	stroke: var(--rule-bright);
+	stroke-width: 1;
+	stroke-linejoin: round;
+	cursor: pointer;
+	transition:
+		fill 120ms ease,
+		stroke 120ms ease;
+}
+
+.cube__face:hover {
+	fill: color-mix(in srgb, var(--signal) 26%, transparent);
+	stroke: var(--signal);
+}
+
+.cube__reset {
+	padding: 0.1rem 0.35rem;
+	font-family: var(--mono);
+	font-size: 0.58rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--ink-faint);
+	background: transparent;
+	border: 0;
+	cursor: pointer;
+	transition: color 120ms ease;
+}
+
+.cube__reset:hover {
+	color: var(--signal);
+}
+
+/*
+ * The way out of the tool.
+ *
+ * Marked by the brightness of its outline, nothing else. Colour already means two things here —
+ * the thing under the pointer, and the option that is selected — so a third use made the format
+ * button read as a toggle; and a filled or lifted surface is a kind of emphasis this interface
+ * does not otherwise own, which made it look like a mistake. Hairlines are the whole vocabulary,
+ * so the brightest hairline is the natural way to say "this one first".
+ */
+.topbar button.topbar__primary {
+	color: var(--ink);
+	border-color: color-mix(in srgb, var(--ink) 52%, transparent);
+}
+
+.topbar button.topbar__primary .topbar__icon {
+	color: var(--ink);
+}
+
+.topbar button.topbar__primary:disabled {
+	color: var(--ink-faint);
+	border-color: var(--rule);
+}
+
+/* ---------------------------------------------------------- separation -- */
+
+/*
+ * The number that comes out of dragging the upper half apart — not a second control for it. Sits
+ * low on the left, clear of the export strip and the readout in the opposite corner.
+ */
+.separation {
+	position: absolute;
+	z-index: 1;
+	bottom: 0.9rem;
+	left: 1rem;
+	display: flex;
+	align-items: center;
+	gap: 0.3rem;
+	font-family: var(--mono);
+	font-size: 0.7rem;
+	color: var(--ink-faint);
+}
+
+.separation__icon {
+	display: flex;
+}
+
+.separation input {
+	width: 2.6rem;
+	padding: 0 0.15rem;
+	font: inherit;
+	font-variant-numeric: tabular-nums;
+	text-align: right;
+	color: var(--ink-dim);
+	background: transparent;
+	border: 0;
+	border-bottom: 1px dashed var(--rule-bright);
+	appearance: textfield;
+}
+
+.separation input::-webkit-outer-spin-button,
+.separation input::-webkit-inner-spin-button {
+	appearance: none;
+	margin: 0;
+}
+
+.separation input:focus {
+	outline: none;
+	color: var(--signal);
+	border-bottom-color: var(--signal);
+}
+
+/* The readout: set faint, to glance at rather than read. */
+.hud--stats {
+	right: 1rem;
+	bottom: 0.9rem;
+	text-align: right;
+	pointer-events: none;
+	user-select: none;
+}
+
+.hud__figure {
+	margin: 0;
+	font-family: var(--mono);
+	font-size: 1.05rem;
+	font-weight: 400;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.01em;
+	color: color-mix(in srgb, var(--ink) 52%, transparent);
+}
+
+.hud__unit {
+	margin-left: 0.4rem;
+	font-size: 0.62rem;
+	color: var(--ink-faint);
+}
+
+.hud__line {
+	margin: 0.15rem 0 0;
+	font-family: var(--mono);
+	font-size: 0.7rem;
+	font-variant-numeric: tabular-nums;
+	color: var(--ink-faint);
+}
+
+.hud__line--faint {
+	opacity: 0.6;
+}
+
+.hud__sep {
+	margin: 0 0.4rem;
+	opacity: 0.45;
+}
+
+.hud__aside {
+	margin-left: 0.4rem;
+	font-family: var(--sans);
+	font-size: 0.64rem;
+	opacity: 0.8;
+}
+
+/* The one thing in the readout that can be touched. */
+.hud__input {
+	width: 2.5rem;
+	margin: 0 0.15rem;
+	padding: 0 0.1rem;
+	font: inherit;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+	color: var(--ink-dim);
+	background: transparent;
+	border: 0;
+	border-bottom: 1px dashed var(--rule-bright);
+	pointer-events: auto;
+	appearance: textfield;
+}
+
+.hud__input::-webkit-outer-spin-button,
+.hud__input::-webkit-inner-spin-button {
+	appearance: none;
+	margin: 0;
+}
+
+.hud__input:focus {
+	outline: none;
+	color: var(--signal);
+	border-bottom-color: var(--signal);
+}
+
+@media (max-width: 760px) {
+	.hud--stats,
+	.hud--view {
+		display: none;
+	}
+}
+
+/* ----------------------------------------------------------- page load -- */
+
+/*
+ * One staggered reveal on load, and nothing after it. The panel is a working surface; anything
+ * that animates while a value is being dialled would just be in the way.
+ */
+.masthead,
+.panel section,
+.hud,
+.topbar {
+	animation: rise 420ms cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+}
+
+.panel section:nth-of-type(1) {
+	animation-delay: 40ms;
+}
+.panel section:nth-of-type(2) {
+	animation-delay: 80ms;
+}
+.panel section:nth-of-type(3) {
+	animation-delay: 120ms;
+}
+.panel section:nth-of-type(4) {
+	animation-delay: 160ms;
+}
+.panel section:nth-of-type(5) {
+	animation-delay: 200ms;
+}
+.panel section:nth-of-type(6) {
+	animation-delay: 240ms;
+}
+.hud {
+	animation-delay: 300ms;
+}
+
+@keyframes rise {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-delay: 0ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}
