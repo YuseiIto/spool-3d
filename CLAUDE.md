@@ -110,5 +110,12 @@ CAD kernel needs `'unsafe-eval'`. The worker is emitted into `dist/workers/` (`v
 `public/_headers` grants it there and only there; the main thread stays strict. Break that
 arrangement and models stop building in production only.
 
+Every `_headers` rule that matches contributes its headers, and a header given twice is **returned
+twice, not overridden**. Two `Content-Security-Policy` headers are two policies enforced together,
+so what survives is their intersection — a permissive rule can never loosen a broad strict one.
+The strict policy is therefore scoped to the document rather than written as a catch-all, and
+`src/integration/headers.test.ts` holds every path to at most one policy. A local server that sets
+headers with `setHeader` will not reproduce this, and once reported a broken policy as working.
+
 To check it, look for `.hud--stats`, which renders only once a model has come back. The presence of
 the canvas, or of anything drawn at all, is always true and proves nothing.

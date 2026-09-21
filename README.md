@@ -91,13 +91,14 @@ Two of these boundaries carry real weight and are enforced by `no-restricted-imp
 
 ## Deployment
 
-Cloudflare Pages, built from `main` by Cloudflare's own Git integration — so no deployment
-credentials live in this repository or in GitHub Actions, which only ever runs the checks.
+Cloudflare Workers, serving static assets, built from `main` by Cloudflare's own Git integration
+— so no deployment credentials live in this repository or in GitHub Actions, which only ever runs
+the checks.
 
 | Setting | Value |
 | --- | --- |
 | Build command | `npm run build` |
-| Output directory | `dist` |
+| Deploy command | `npx wrangler deploy --assets ./dist` |
 | Node version | from `.node-version` |
 
 `public/_headers` carries the rest. The WASM module is single-threaded, so the site needs no
