@@ -1,0 +1,49 @@
+{
+	"name": "spool-3d",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"license": "MIT",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview",
+		"lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
+		"format": "biome check --write",
+		"format:ci": "biome ci",
+		"test": "vitest run",
+		"typecheck": "tsc"
+	},
+	"dependencies": {
+		"@fontsource/ibm-plex-mono": "^5.3.0",
+		"@fontsource/ibm-plex-sans": "^5.3.0",
+		"@jscadui/3mf-export": "^0.5.0",
+		"comlink": "^4.4.2",
+		"fflate": "^0.8.3",
+		"manifold-3d": "^3.5.3",
+		"react": "^19.3.0",
+		"react-dom": "^19.3.0",
+		"three": "^0.186.0",
+		"zod": "^4.6.5"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.5.14",
+		"@eslint/compat": "^2.1.1",
+		"@eslint/js": "^9.39.5",
+		"@types/react": "^19.3.0",
+		"@types/react-dom": "^19.3.0",
+		"@types/three": "^0.186.0",
+		"@typescript-eslint/eslint-plugin": "^8.70.0",
+		"@typescript-eslint/parser": "^8.70.0",
+		"@vitejs/plugin-react": "^6.1.1",
+		"eslint": "^9.39.5",
+		"eslint-plugin-jsx-a11y": "^6.10.2",
+		"eslint-plugin-react": "^7.37.5",
+		"eslint-plugin-react-hooks": "^7.1.1",
+		"fast-check": "^4.10.2",
+		"globals": "^17.12.0",
+		"typescript": "^5.9.3",
+		"vite": "^8.3.0",
+		"vitest": "^5.0.1"
+	}
+}
