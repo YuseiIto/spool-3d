@@ -23,7 +23,7 @@
 		"manifold-3d": "^3.5.3",
 		"react": "^19.3.0",
 		"react-dom": "^19.3.0",
-		"three": "^0.186.0",
+		"three": "^0.187.0",
 		"zod": "^4.6.5"
 	},
 	"devDependencies": {
@@ -32,7 +32,7 @@
 		"@eslint/js": "^9.39.5",
 		"@types/react": "^19.3.0",
 		"@types/react-dom": "^19.3.0",
-		"@types/three": "^0.186.0",
+		"@types/three": "^0.187.0",
 		"@typescript-eslint/eslint-plugin": "^8.70.0",
 		"@typescript-eslint/parser": "^8.70.0",
 		"@vitejs/plugin-react": "^6.1.1",
